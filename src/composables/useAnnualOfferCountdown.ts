@@ -1,7 +1,9 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { shouldResetOfferState } from '@/config/environment'
 
 const STORAGE_KEY = 'luisa_pita_annual_offer_expires_at'
 const OFFER_DURATION = 2 * 60 * 60 * 1000
+let initialized = false
 
 export function useAnnualOfferCountdown() {
   const remaining = ref(0)
@@ -14,10 +16,14 @@ export function useAnnualOfferCountdown() {
 
   onMounted(() => {
     let expiresAt = Number(localStorage.getItem(STORAGE_KEY))
-    if (!Number.isFinite(expiresAt) || expiresAt <= 0) {
+    if (!initialized && shouldResetOfferState()) {
+      expiresAt = Date.now() + OFFER_DURATION
+      localStorage.setItem(STORAGE_KEY, String(expiresAt))
+    } else if (!Number.isFinite(expiresAt) || expiresAt <= 0) {
       expiresAt = Date.now() + OFFER_DURATION
       localStorage.setItem(STORAGE_KEY, String(expiresAt))
     }
+    initialized = true
     update()
     intervalId = window.setInterval(update, 1000)
   })

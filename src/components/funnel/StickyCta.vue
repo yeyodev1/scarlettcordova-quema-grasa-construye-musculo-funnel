@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useCountdown } from '@/composables/useCountdown'
 
-const { minutes, seconds, price, isActive } = useCountdown()
+const { hours, minutes, seconds, price, isActive } = useCountdown()
 </script>
 
 <template>
@@ -10,7 +10,7 @@ const { minutes, seconds, price, isActive } = useCountdown()
       <div class="sticky-cta__offer">
         <span>MEMBRESÍA BASE</span><strong>${{ price }}</strong><small>al mes</small>
       </div>
-      <div v-if="isActive" class="sticky-cta__timer"><span>{{ minutes }}:{{ seconds }}</span><small>PARA ELEGIR BONOS</small></div>
+      <div v-if="isActive" class="sticky-cta__timer"><span>{{ hours }}:{{ minutes }}:{{ seconds }}</span><small>PARA ELEGIR BONOS</small></div>
       <a href="#oferta">VER OFERTA <span>↑</span></a>
     </div>
   </aside>

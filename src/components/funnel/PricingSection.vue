@@ -13,7 +13,7 @@ const monthlyFeatures = ['Programa de entrenamiento progresivo', 'Guías de nutr
 const annualFeatures = ['12 meses completos de Vital 360', 'Círculo VIP incluido', 'Recetario nutricional incluido', 'Un único pago, sin mensualidades'] as const
 const annualPrice = computed(() => annualOfferActive.value ? 297 : 400)
 const annualSavings = computed(() => annualOfferActive.value ? 103 : 0)
-const monthlyDescription = 'Comienza a entrenar, nutrirte mejor y construir hábitos que mejoren tu vida por $27 al mes.'
+const monthlyDescription = 'Aprovecha esta oportunidad para entrenar, nutrirte mejor y construir hábitos que transformen tu vida por $27 al mes.'
 const checkoutOpen = ref(false)
 const selectedPlan = ref<'monthly' | 'annual'>('monthly')
 
@@ -32,16 +32,16 @@ const openCheckout = (plan: 'monthly' | 'annual') => {
         <p class="section-lead">Elige la opción que mejor se adapta a tu compromiso y comienza a entrenar con Luisa.</p>
       </div>
       <div class="pricing__value">
-        <span>Tu membresía base</span><strong>${{ price }} al mes</strong><small>Elige bonos opcionales solo si los quieres</small>
+        <span>Precio mensual regular</span><del>$47 al mes</del><strong>HOY ${{ price }} AL MES</strong><small>Ahorras $20 al mes. Los bonos del checkout son completamente opcionales.</small>
       </div>
       <CountdownTimer />
       <AnnualOfferTimer />
       <div class="pricing__plans">
-        <PlanCard name="Membresía mensual" :price="price" suffix="al mes" :description="monthlyDescription" :features="monthlyFeatures" featured badge-text="EMPIEZA HOY POR SOLO $27" button-text="QUIERO EMPEZAR MI CAMBIO" @select="openCheckout('monthly')" />
+        <PlanCard name="Membresía mensual" :price="price" :original-price="47" suffix="al mes" :description="monthlyDescription" :features="monthlyFeatures" featured badge-text="PRECIO ESPECIAL DE ESTA OPORTUNIDAD" button-text="QUIERO EMPEZAR POR $27" @select="openCheckout('monthly')" />
         <PlanCard name="Plan anual Vital 360" :price="annualPrice" suffix="por 12 meses" :description="annualOfferActive ? 'Oferta exclusiva de 2 horas. Precio normal: $400.' : 'Precio anual regular con todos los beneficios incluidos.'" :features="annualFeatures" :button-text="annualOfferActive ? 'APROVECHAR $297 · AHORRO $103' : 'QUIERO EL PLAN ANUAL'" @select="openCheckout('annual')" />
       </div>
       <div class="pricing__upgrades">
-        <div><span>✓</span><p><strong>Tu base siempre es $27</strong>Los bonos son opcionales: tú decides si deseas sumarlos para potenciar tu experiencia.</p></div>
+        <div><span>✓</span><p><strong>De $47 a solo $27 al mes</strong>Aprovecha esta oportunidad y ahorra $20 mensuales. Los bonos son opcionales.</p></div>
         <div><span>↑</span><p><strong>{{ annualOfferActive ? `Oferta anual: ahorra $${annualSavings}` : 'Plan anual a precio regular' }}</strong>{{ annualOfferActive ? 'Durante 2 horas pagas $297 en lugar de $400.' : 'El precio anual volvió a $400.' }}</p></div>
       </div>
       <p class="pricing__terms">La Cajita procesa el pago inicial. La membresía mensual cuesta $27; los bonos disponibles en el checkout son opcionales y se cobran una sola vez.</p>

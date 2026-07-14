@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onUnmounted, reactive, ref, watch } from 'vue'
+import { useBonusExtensions } from '@/composables/useBonusExtensions'
 import { useCountdown } from '@/composables/useCountdown'
 import { useAnnualOfferCountdown } from '@/composables/useAnnualOfferCountdown'
 import { getPaymentResponseUrl } from '@/config/environment'
@@ -24,14 +25,19 @@ const addVip = ref(false)
 const addNutrition = ref(false)
 const errorMessage = ref('')
 const loading = ref(false)
-const bonusExtensionRemaining = ref(0)
-const bonusExtensionUsed = ref(false)
+const overlay = ref<HTMLElement | null>(null)
+const {
+  remaining: bonusExtensionRemaining,
+  used: bonusExtensionUsed,
+  active: bonusExtensionActive,
+  opportunitiesLeft,
+  unlock: unlockBonusExtension,
+} = useBonusExtensions()
 const form = reactive({ name: '', lastName: '', email: '' })
 const vipPrice = Math.min(Math.max(Number(import.meta.env.VITE_VIP_UPGRADE_PRICE) || 15, 0), 15)
 const nutritionPrice = 5
 const isAnnual = computed(() => props.plan === 'annual')
 const annualDiscountActive = computed(() => isAnnual.value && props.annualPrice === 297)
-const bonusExtensionActive = computed(() => bonusExtensionRemaining.value > 0)
 const bonusesActive = computed(() => isActive.value || bonusExtensionActive.value)
 const bonusTimer = computed(() => {
   if (!bonusExtensionActive.value) return { hours: hours.value, minutes: minutes.value, seconds: seconds.value }
@@ -43,8 +49,8 @@ const bonusTimer = computed(() => {
   }
 })
 const monthlyIntro = computed(() => {
-  if (isActive.value) return 'Tu membresía siempre cuesta $27. Si deseas acelerar tu progreso, puedes sumar uno o ambos bonos con un único pago.'
-  if (bonusExtensionActive.value) return 'Tu membresía sigue en $27. Tienes 5 minutos para elegir los apoyos opcionales que potenciarán tu transformación.'
+  if (isActive.value) return 'Tienes 2 horas desde el inicio de tu sesión para sumar uno o ambos bonos. Tu membresía siempre cuesta $27.'
+  if (bonusExtensionActive.value) return `Activaste la oportunidad ${bonusExtensionUsed.value} de 3. Tienes 5 minutos para decidir si sumas tus bonos.`
   return 'El tiempo para elegir bonos terminó. Tu membresía base continúa disponible por solo $27.'
 })
 const basePrice = computed(() => isAnnual.value ? props.annualPrice : 27)
@@ -54,20 +60,6 @@ const total = computed(() => basePrice.value
 
 const close = () => {
   if (!loading.value) emit('close')
-}
-
-const updateBonusExtension = () => {
-  const expiresAt = Number(sessionStorage.getItem('luisa_pita_bonus_extension_expires_at'))
-  bonusExtensionRemaining.value = Number.isFinite(expiresAt) ? Math.max(0, expiresAt - Date.now()) : 0
-}
-
-const unlockBonusExtension = () => {
-  if (bonusExtensionUsed.value) return
-  const expiresAt = Date.now() + 5 * 60 * 1000
-  bonusExtensionUsed.value = true
-  sessionStorage.setItem('luisa_pita_bonus_extension_used', 'true')
-  sessionStorage.setItem('luisa_pita_bonus_extension_expires_at', String(expiresAt))
-  updateBonusExtension()
 }
 
 const waitForSdk = async () => {
@@ -118,6 +110,7 @@ const renderPayment = async () => {
   step.value = 'payment'
   loading.value = false
   await nextTick()
+  overlay.value?.scrollTo({ top: 0 })
 
   const PaymentBox = await waitForSdk()
   const container = document.getElementById('payphone-button')
@@ -170,24 +163,15 @@ watch(bonusesActive, (active) => {
   }
 })
 
-let bonusExtensionInterval: ReturnType<typeof window.setInterval> | undefined
-
-onMounted(() => {
-  bonusExtensionUsed.value = sessionStorage.getItem('luisa_pita_bonus_extension_used') === 'true'
-  updateBonusExtension()
-  bonusExtensionInterval = window.setInterval(updateBonusExtension, 1000)
-})
-
 onUnmounted(() => {
   document.body.style.overflow = ''
-  if (bonusExtensionInterval !== undefined) window.clearInterval(bonusExtensionInterval)
 })
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="checkout-transition">
-      <div v-if="open" class="checkout-overlay" :class="{ 'checkout-overlay--preparing': loading }" role="presentation" @click.self="close">
+      <div v-if="open" ref="overlay" class="checkout-overlay" :class="{ 'checkout-overlay--preparing': loading }" role="presentation" @click.self="close">
       <section class="checkout-modal" :class="{ 'checkout-modal--urgent': !isAnnual && !loading, 'checkout-modal--preparing': loading }" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
         <button v-if="!loading" type="button" class="checkout-modal__close" aria-label="Cerrar checkout" @click="close">×</button>
 
@@ -218,17 +202,17 @@ onUnmounted(() => {
 
           <div v-if="!isAnnual && bonusesActive" class="checkout-modal__timer">
             <span>{{ bonusTimer.hours }}:{{ bonusTimer.minutes }}:{{ bonusTimer.seconds }}</span>
-            <small>{{ bonusExtensionActive ? 'EXTENSIÓN FINAL PARA POTENCIAR TU CAMBIO' : 'PARA ELEGIR TUS BONOS OPCIONALES' }}</small>
+            <small>{{ bonusExtensionActive ? `OPORTUNIDAD ${bonusExtensionUsed} DE 3 PARA DECIDIR` : '2 HORAS PARA ELEGIR TUS BONOS OPCIONALES' }}</small>
           </div>
 
           <div v-else-if="!isAnnual" class="checkout-modal__expired">
             <span>!</span>
             <div>
-               <strong>Tu membresía de $27 sigue disponible.</strong>
-               <p v-if="!bonusExtensionUsed">El tiempo para elegir apoyos adicionales terminó, pero si estás comprometida con mejorar tu vida te damos 5 minutos más.</p>
-               <p v-else>La extensión para elegir bonos finalizó. Puedes continuar con Vital 360 por su precio base de $27.</p>
-            </div>
-            <button v-if="!bonusExtensionUsed" type="button" @click="unlockBonusExtension">ESTOY COMPROMETIDA, QUIERO LOS BONOS <b>+5 MIN</b></button>
+               <strong>{{ opportunitiesLeft > 0 ? `Te quedan ${opportunitiesLeft} oportunidades para recuperar los bonos.` : 'Has perdido el acceso a los bonos definitivamente.' }}</strong>
+               <p v-if="opportunitiesLeft > 0">Cada oportunidad te da 5 minutos para decidir. Después de usar las 3, ya no podrás recuperarlos desde este navegador.</p>
+               <p v-else>Utilizaste tus 3 oportunidades. Los bonos ya no están disponibles, pero puedes continuar con Vital 360 por $27.</p>
+             </div>
+             <button v-if="opportunitiesLeft > 0" type="button" @click="unlockBonusExtension">ACTIVAR OPORTUNIDAD {{ bonusExtensionUsed + 1 }} DE 3 <b>+5 MIN</b></button>
           </div>
 
           <div v-if="!isAnnual && bonusesActive" class="checkout-modal__upgrades">
@@ -285,7 +269,7 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.checkout-overlay { position: fixed; inset: 0; z-index: 100; display: flex; justify-content: center; align-items: center; width: 100%; padding: 1rem; overflow-y: auto; background: rgba($primary-dark, 0.82); backdrop-filter: blur(10px); }
+.checkout-overlay { position: fixed; inset: 0; z-index: 100; display: flex; justify-content: center; align-items: safe center; width: 100%; padding: 1rem; overflow-y: auto; background: rgba($primary-dark, 0.82); backdrop-filter: blur(10px); }
 .checkout-overlay--preparing { align-items: center !important; }
 .checkout-modal { position: relative; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 48rem; max-height: calc(100vh - 2rem); overflow-y: auto; border: 1px solid rgba($primary, 0.35); border-radius: 1.3rem; background: $white; box-shadow: 0 30px 90px rgba($primary-dark, 0.4); transition: max-width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), min-height 0.5s ease, max-height 0.5s ease, border-radius 0.45s ease, background 0.35s ease; }
 .checkout-modal--preparing { max-width: 11rem; min-height: 11rem; max-height: 11rem; overflow: hidden; border: 2px solid $primary; border-radius: 50%; background: $primary-dark; box-shadow: 0 24px 70px rgba($primary, 0.25); }
@@ -363,7 +347,7 @@ onUnmounted(() => {
 }
 
 @media (max-width: 600px) {
-  .checkout-overlay { align-items: flex-start; padding: 0.5rem; }
+  .checkout-overlay { padding: 0.5rem; }
   .checkout-modal { max-height: calc(100vh - 1rem); }
   .checkout-modal__upgrade { align-items: flex-start; }
   .checkout-modal__upgrade b { font-size: 1rem; }

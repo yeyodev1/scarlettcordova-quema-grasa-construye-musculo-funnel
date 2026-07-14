@@ -8,6 +8,10 @@ export function getAppEnvironment(hostname = window.location.hostname): AppEnvir
   return 'production'
 }
 
+export function shouldResetOfferState(): boolean {
+  return getAppEnvironment() !== 'production'
+}
+
 export function getFrontendBaseUrl(): string {
   const environment = getAppEnvironment()
   if (environment === 'local') return 'http://localhost:5173'

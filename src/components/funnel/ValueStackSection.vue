@@ -24,10 +24,10 @@ const valueItems = [
 const totalStackValue = valueItems.reduce((total, item) => total + item.value, 0)
 
 const vipFeatures = [
-  'Círculo privado de mujeres comprometidas con su transformación',
-  'Encuentro grupal VIP mensual con Luisa',
-  'Retos privados y seguimiento de objetivos',
-  'Prioridad para resolver dudas dentro de la comunidad',
+  { number: '01', title: 'Comunidad con intención', text: 'Conecta con mujeres que comparten tu compromiso y celebran cada avance contigo.' },
+  { number: '02', title: 'Encuentro mensual con Luisa', text: 'Un espacio VIP para reforzar tu enfoque, resolver bloqueos y seguir avanzando.' },
+  { number: '03', title: 'Retos y objetivos medibles', text: 'Convierte tus metas en acciones concretas que puedas sostener y reconocer.' },
+  { number: '04', title: 'Acompañamiento prioritario', text: 'Comparte tus dudas dentro del círculo y recibe orientación con mayor cercanía.' },
 ] as const
 </script>
 
@@ -65,9 +65,12 @@ const vipFeatures = [
         <div class="vip-upgrade__copy">
           <p class="eyebrow eyebrow--light"><span></span> UPGRADE EXCLUSIVO</p>
           <h2>Círculo VIP de Mujeres Vitales</h2>
-          <p>Para quienes no solo quieren comenzar, sino rodearse de mujeres decididas a elevar su cuerpo, energía y confianza.</p>
+          <p>Un espacio íntimo de acompañamiento para mujeres que decidieron dejar de postergarse y avanzar con más enfoque, constancia y confianza.</p>
           <div class="vip-upgrade__features">
-            <p v-for="feature in vipFeatures" :key="feature"><span>✓</span>{{ feature }}</p>
+            <article v-for="feature in vipFeatures" :key="feature.number">
+              <span>{{ feature.number }}</span>
+              <div><strong>{{ feature.title }}</strong><p>{{ feature.text }}</p></div>
+            </article>
           </div>
         </div>
         <div class="vip-upgrade__offer">
@@ -121,11 +124,15 @@ const vipFeatures = [
   color: $white;
 
   &__copy, &__offer { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; width: 100%; gap: 1rem; padding: clamp(1.5rem, 5vw, 3rem); text-align: center; }
-  &__copy h2 { color: $white; }
+  &__copy { align-items: flex-start; text-align: left; }
+  &__copy h2 { width: 100%; color: $white; }
   &__copy > p:not(.eyebrow) { width: 100%; color: rgba($white, 0.75); line-height: 1.65; }
-  &__features { display: flex; flex-direction: column; width: 100%; gap: 0.65rem; }
-  &__features p { display: flex; justify-content: center; width: 100%; gap: 0.55rem; color: $white; text-align: left; }
-  &__features span { color: $primary-dark; font-weight: 900; }
+  &__features { display: flex; align-items: stretch; flex-wrap: wrap; width: 100%; gap: 0.7rem; }
+  &__features article { display: flex; flex: 1 1 14rem; align-items: flex-start; width: 100%; gap: 0.75rem; padding: 1rem; border: 1px solid rgba($white, 0.14); border-radius: 0.75rem; background: rgba($primary-dark, 0.12); }
+  &__features article > span { display: flex; justify-content: center; align-items: center; width: 100%; max-width: 2rem; height: 2rem; flex-shrink: 0; border: 1px solid rgba($primary, 0.45); border-radius: 50%; color: $primary; font-size: 0.62rem; font-weight: 900; }
+  &__features article > div { display: flex; flex-direction: column; width: 100%; gap: 0.3rem; }
+  &__features strong { width: 100%; color: $white; font-size: 0.86rem; }
+  &__features article p { width: 100%; color: rgba($white, 0.65); font-size: 0.75rem; line-height: 1.5; }
   &__offer { justify-content: center; background: $LPB-LIGHT; color: $primary-dark; }
   &__offer > span { width: 100%; color: $LPB-GREEN-D; font-size: 0.7rem; font-weight: 900; letter-spacing: 0.1em; }
   &__offer > div { display: flex; justify-content: center; align-items: flex-end; width: 100%; }
