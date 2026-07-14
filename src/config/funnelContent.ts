@@ -32,6 +32,6 @@ export const faqItems = [
   { question: '¿Necesito tener experiencia entrenando?', answer: 'No. El programa está organizado de forma progresiva para que puedas comenzar desde tu nivel actual y avanzar con una estructura clara.' },
   { question: '¿Puedo entrenar desde casa?', answer: 'Sí. Vital 360 está diseñado para que puedas entrenar desde casa o donde estés, siguiendo las indicaciones de cada sesión.' },
   { question: '¿Tengo que seguir una dieta extrema?', answer: 'No. El enfoque es aprender a alimentarte para rendir, desarrollar fuerza y sostener tus hábitos sin dietas de hambre.' },
-  { question: '¿Qué significa congelar mi precio?', answer: 'Si entras durante la preventa mensual, mantienes el precio promocional de $27 al mes mientras tu membresía permanezca activa, sujeto a las condiciones del checkout.' },
+  { question: '¿Cuánto cuesta la membresía mensual?', answer: 'La membresía base cuesta $27 al mes. En el checkout puedes elegir bonos opcionales de pago único; con ambos, tu primer pago máximo sería de $47.' },
   { question: '¿Cuál es la diferencia con el plan anual?', answer: 'La mensualidad te permite comenzar por $27. El upgrade anual asegura 12 meses completos por un pago único de $297.' },
 ] as const

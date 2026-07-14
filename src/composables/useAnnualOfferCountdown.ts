@@ -1,9 +1,9 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
-const STORAGE_KEY = 'luisa_pita_offer_expires_at'
-const OFFER_DURATION = 60 * 60 * 1000
+const STORAGE_KEY = 'luisa_pita_annual_offer_expires_at'
+const OFFER_DURATION = 2 * 60 * 60 * 1000
 
-export function useCountdown() {
+export function useAnnualOfferCountdown() {
   const remaining = ref(0)
   let intervalId: ReturnType<typeof window.setInterval> | undefined
 
@@ -26,19 +26,15 @@ export function useCountdown() {
     if (intervalId !== undefined) window.clearInterval(intervalId)
   })
 
-  const hours = computed(() => Math.floor(remaining.value / 3600000))
-  const minutes = computed(() => Math.floor((remaining.value % 3600000) / 60000))
-  const seconds = computed(() => Math.floor((remaining.value % 60000) / 1000))
-  const isActive = computed(() => remaining.value > 0)
-  const price = 27
-
   const format = (value: number) => String(value).padStart(2, '0')
+  const hours = computed(() => format(Math.floor(remaining.value / 3600000)))
+  const minutes = computed(() => format(Math.floor((remaining.value % 3600000) / 60000)))
+  const seconds = computed(() => format(Math.floor((remaining.value % 60000) / 1000)))
 
   return {
-    hours: computed(() => format(hours.value)),
-    minutes: computed(() => format(minutes.value)),
-    seconds: computed(() => format(seconds.value)),
-    isActive,
-    price,
+    hours,
+    minutes,
+    seconds,
+    isActive: computed(() => remaining.value > 0),
   }
 }

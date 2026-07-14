@@ -1,20 +1,27 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useCountdown } from '@/composables/useCountdown'
+import { useAnnualOfferCountdown } from '@/composables/useAnnualOfferCountdown'
 
-const { price, isActive } = useCountdown()
-const vipCheckoutUrl = import.meta.env.VITE_VIP_CHECKOUT_URL || import.meta.env.VITE_CHECKOUT_URL || '#faq'
+const { price } = useCountdown()
+const { isActive: annualOfferActive } = useAnnualOfferCountdown()
 const vipUpgradePrice = Number(import.meta.env.VITE_VIP_UPGRADE_PRICE) || 15
-const regularAnnualValue = 47 * 12
-const annualPrice = computed(() => isActive.value ? 297 : 400)
+const regularAnnualValue = 400
+const annualPrice = computed(() => annualOfferActive.value ? 297 : regularAnnualValue)
 const annualSavings = computed(() => regularAnnualValue - annualPrice.value)
 
 const valueItems = [
-  { number: '01', title: 'Plan de entrenamiento anual', text: 'Rutinas funcionales progresivas, organizadas para avanzar mes a mes.' },
-  { number: '02', title: 'Guías de nutrición', text: 'Orientación práctica para alimentarte antes y después de entrenar.' },
-  { number: '03', title: 'Sesiones y retos nuevos', text: 'Transmisiones, actualizaciones y desafíos durante tu periodo de acceso.' },
-  { number: '04', title: 'Comunidad Vital 360', text: 'Un espacio de acompañamiento para compartir avances y mantenerte enfocada.' },
+  { number: '01', title: 'Plan anual de entrenamiento', text: 'Programación funcional progresiva para avanzar mes a mes.', value: 197 },
+  { number: '02', title: 'Guías de nutrición', text: 'Orientación para alimentarte antes y después de entrenar.', value: 97 },
+  { number: '03', title: 'Sesiones en vivo', text: 'Entrenamientos y espacios grupales guiados por Luisa.', value: 147 },
+  { number: '04', title: 'Comunidad Vital 360', text: 'Acompañamiento para compartir avances y mantenerte enfocada.', value: 97 },
+  { number: '05', title: 'Retos de transformación', text: 'Desafíos periódicos para renovar tu motivación y constancia.', value: 67 },
+  { number: '06', title: 'Biblioteca funcional', text: 'Sesiones organizadas por objetivo, intensidad y nivel.', value: 97 },
+  { number: '07', title: 'Calendario de progreso', text: 'Una ruta clara para registrar hábitos, sesiones y avances.', value: 47 },
+  { number: '08', title: 'Actualizaciones anuales', text: 'Nuevas rutinas, recursos y contenidos durante tu acceso.', value: 47 },
 ] as const
+
+const totalStackValue = valueItems.reduce((total, item) => total + item.value, 0)
 
 const vipFeatures = [
   'Círculo privado de mujeres comprometidas con su transformación',
@@ -28,9 +35,9 @@ const vipFeatures = [
   <section class="value-stack section-pad">
     <div class="funnel-container value-stack__inner">
       <div class="value-stack__heading">
-        <p class="eyebrow"><span></span> TODO LO QUE RECIBES</p>
-        <h2>No estás comprando rutinas sueltas. Estás entrando a un ecosistema completo.</h2>
-        <p class="section-lead">Vital 360 reúne la estructura, la orientación y el acompañamiento que necesitas para sostener tu proceso.</p>
+        <p class="eyebrow"><span></span> 8 ENTREGABLES DENTRO DE VITAL 360</p>
+        <h2>Esto es exactamente lo que recibes al entrar.</h2>
+        <p class="section-lead">Ocho recursos que reúnen entrenamiento, nutrición, seguimiento y comunidad para sostener tu proceso.</p>
       </div>
 
       <div class="value-stack__items">
@@ -38,19 +45,20 @@ const vipFeatures = [
           <span>{{ item.number }}</span>
           <h3>{{ item.title }}</h3>
           <p>{{ item.text }}</p>
-          <strong>INCLUIDO</strong>
+          <div class="value-stack__item-value"><small>VALOR</small><strong>${{ item.value }}</strong></div>
         </article>
       </div>
 
       <div class="value-stack__summary">
-        <p>VALOR REGULAR DE 12 MESES</p>
-        <del>${{ regularAnnualValue }}</del>
+        <p>VALOR REFERENCIAL POR SEPARADO</p>
+        <del>${{ totalStackValue }}</del>
+        <span class="value-stack__regular">Precio regular del programa anual: ${{ regularAnnualValue }}</span>
         <div class="value-stack__prices">
-          <span><small>EMPIEZA DESDE</small><strong>${{ price }}/mes</strong></span>
+          <span class="value-stack__recommended"><small>EMPIEZA HOY · LOW TICKET</small><strong>${{ price }}/mes</strong></span>
           <b>O</b>
-          <span><small>PLAN ANUAL</small><strong>${{ annualPrice }}</strong></span>
+          <span><small>{{ annualOfferActive ? 'OFERTA ANUAL · 2 HORAS' : 'PRECIO ANUAL REGULAR' }}</small><strong>${{ annualPrice }}</strong></span>
         </div>
-        <p v-if="isActive" class="value-stack__saving">Con el plan anual de preventa ahorras ${{ annualSavings }} frente al valor mensual regular.</p>
+        <p v-if="annualOfferActive" class="value-stack__saving">Durante 2 horas ahorras ${{ annualSavings }}: pagas $297 en lugar del precio normal de $400.</p>
       </div>
 
       <div class="vip-upgrade">
@@ -64,10 +72,10 @@ const vipFeatures = [
         </div>
         <div class="vip-upgrade__offer">
           <span>AGREGA EL NIVEL VIP POR</span>
-          <div><sup>+$</sup><strong>{{ vipUpgradePrice }}</strong><small>/ mes</small></div>
-          <p>Se suma a la membresía Vital 360 seleccionada.</p>
-          <a :href="vipCheckoutUrl">QUIERO SER VIP <span>→</span></a>
-          <small>Confirma periodicidad y condiciones en el checkout.</small>
+          <div><sup>+$</sup><strong>{{ vipUpgradePrice }}</strong><small>pago único</small></div>
+          <p>Disponible como bono al seleccionar la membresía mensual de Vital 360.</p>
+          <a href="#oferta">ELEGIR MI MEMBRESÍA <span>→</span></a>
+          <small>El plan anual de ${{ annualPrice }} ya incluye este beneficio.</small>
         </div>
       </div>
     </div>
@@ -86,12 +94,16 @@ const vipFeatures = [
   &__item > span { width: 100%; color: $primary; font-size: 0.75rem; font-weight: 900; letter-spacing: 0.1em; }
   &__item h3 { width: 100%; color: $primary-dark; font-size: 1.15rem; }
   &__item p { width: 100%; color: $text-secondary; line-height: 1.55; }
-  &__item strong { width: 100%; margin-top: auto; color: $LPB-GREEN-D; font-size: 0.68rem; letter-spacing: 0.1em; }
+  &__item-value { display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.45rem; margin-top: auto; padding-top: 0.8rem; border-top: 1px solid rgba($primary-dark, 0.08); }
+  &__item-value small { color: $text-secondary; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; }
+  &__item-value strong { color: $LPB-GREEN-D; font-size: 1.25rem; }
   &__summary { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 0.8rem; padding: clamp(1.5rem, 4vw, 2.5rem); border-radius: 1.2rem; background: $primary-dark; color: $white; text-align: center; }
   &__summary > p:first-child { width: 100%; color: $primary; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.12em; }
   &__summary > del { width: 100%; color: rgba($white, 0.55); font-size: 1.4rem; font-weight: 800; }
+  &__regular { width: 100%; color: rgba($white, 0.72); font-size: 0.82rem; }
   &__prices { display: flex; justify-content: center; align-items: center; width: 100%; gap: clamp(1rem, 4vw, 3rem); }
   &__prices > span { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 16rem; }
+  &__recommended { padding: 0.75rem; border: 1px solid $primary; border-radius: 0.7rem; background: rgba($primary, 0.08); }
   &__prices small { width: 100%; color: rgba($white, 0.55); font-size: 0.62rem; }
   &__prices strong { width: 100%; color: $primary; font-size: clamp(2rem, 6vw, 3.5rem); }
   &__prices b { color: rgba($white, 0.45); font-size: 0.75rem; }

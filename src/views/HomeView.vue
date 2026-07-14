@@ -6,6 +6,7 @@ import FutureSection from '@/components/funnel/FutureSection.vue'
 import IncludedSection from '@/components/funnel/IncludedSection.vue'
 import PricingSection from '@/components/funnel/PricingSection.vue'
 import ProblemMethodSection from '@/components/funnel/ProblemMethodSection.vue'
+import ProgramActivityTicker from '@/components/funnel/ProgramActivityTicker.vue'
 import StickyCta from '@/components/funnel/StickyCta.vue'
 import ValueStackSection from '@/components/funnel/ValueStackSection.vue'
 import VslSection from '@/components/funnel/VslSection.vue'
@@ -23,6 +24,7 @@ import VslSection from '@/components/funnel/VslSection.vue'
     <FutureSection />
     <FaqSection />
     <StickyCta />
+    <ProgramActivityTicker />
   </main>
 </template>
 

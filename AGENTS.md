@@ -30,5 +30,8 @@ Vue 3 + TypeScript + Vite funnel/landing app for client "Luisa Pita Bejarano". F
 
 - All structural layouts use `display: flex` and `width: 100%`; CSS Grid is explicitly prohibited.
 - Keep every source file below 400 lines. Funnel sections live as separate components under `src/components/funnel/`; `HomeView.vue` only composes them.
-- Base checkout buttons use `VITE_CHECKOUT_URL`; the VIP upgrade uses `VITE_VIP_CHECKOUT_URL` and `VITE_VIP_UPGRADE_PRICE` (default `15`). Missing checkout URLs intentionally fall back to `#faq`, so set real URLs before launch.
+- Checkout obtains PayPhone token/store configuration from the Academy backend via `POST /api/payments/prepare-box`; never add those credentials to frontend env or source. The VIP one-time upgrade uses `VITE_VIP_UPGRADE_PRICE` (default `15`).
+- PayPhone only works on the domain and response URL registered in PayPhone Developer. Return parameters are confirmed within five minutes by `PaymentResult.vue`; otherwise PayPhone automatically reverses the charge.
+- Runtime URL mapping lives in `src/config/environment.ts`: localhost → frontend `http://localhost:5173`, API `http://localhost:8101`; testing → `testing-storybrand-frontend.bakano.ec` / `testing-storybrand-backapp.bakano.ec`; production → `vital360.luisapitabejarano.com` / `luisa-pita-bejarano-backapp.vercel.app`.
 - The 60-minute offer deadline is created once and persisted in `localStorage` under `luisa_pita_offer_expires_at`; reloading must not reset it.
+- The annual `$297` discount has a separate 2-hour deadline persisted under `luisa_pita_annual_offer_expires_at`; after expiry its price returns to `$400`.

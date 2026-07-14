@@ -12,6 +12,7 @@
         ></wistia-player>
       </div>
       <p class="vsl__note">Reserva unos minutos sin distracciones. Este puede ser el comienzo de tu mejor versión.</p>
+      <a class="primary-button" href="#oferta">QUIERO EMPEZAR AHORA <span>→</span></a>
     </div>
   </section>
 </template>
@@ -20,7 +21,7 @@
 .vsl {
   background: $LPB-LIGHT;
 
-  &__inner { flex-direction: column; justify-content: center; align-items: center; gap: 1rem; text-align: center; }
+  &__inner { flex-direction: column; justify-content: center; align-items: center; gap: 1.5rem; text-align: center; }
   h2 { max-width: 55rem; }
 
   &__player {
@@ -51,6 +52,6 @@
     filter: blur(5px);
   }
 
-  &__note { width: 100%; color: $text-secondary; font-size: 0.82rem; }
+  &__note { width: 100%; margin-top: 0.5rem; color: $text-secondary; font-size: 0.82rem; }
 }
 </style>

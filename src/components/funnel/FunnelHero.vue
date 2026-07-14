@@ -39,6 +39,7 @@ import { funnelImages } from '@/config/funnelContent'
   align-items: center;
   width: 100%;
   min-height: 100vh;
+  margin-bottom: clamp(0.75rem, 2vw, 1.5rem);
   overflow: hidden;
   background: $primary-dark;
 

@@ -8,9 +8,9 @@ const { minutes, seconds, price, isActive } = useCountdown()
   <aside class="sticky-cta">
     <div class="sticky-cta__inner funnel-container">
       <div class="sticky-cta__offer">
-        <span>{{ isActive ? 'PRECIO CONGELADO' : 'PRECIO REGULAR' }}</span><strong>${{ price }}</strong><small>al mes</small>
+        <span>MEMBRESÍA BASE</span><strong>${{ price }}</strong><small>al mes</small>
       </div>
-      <div class="sticky-cta__timer"><span>{{ minutes }}:{{ seconds }}</span><small>TIEMPO RESTANTE</small></div>
+      <div v-if="isActive" class="sticky-cta__timer"><span>{{ minutes }}:{{ seconds }}</span><small>PARA ELEGIR BONOS</small></div>
       <a href="#oferta">VER OFERTA <span>↑</span></a>
     </div>
   </aside>

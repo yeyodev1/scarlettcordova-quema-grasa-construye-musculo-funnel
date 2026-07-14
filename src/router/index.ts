@@ -7,12 +7,19 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/HomeView.vue'),
     meta: { title: 'Home' },
   },
+  {
+    path: '/pay-response',
+    name: 'PayResponse',
+    component: () => import('@/components/funnel/PaymentResult.vue'),
+    meta: { title: 'Confirmación de pago' },
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior() {
+  scrollBehavior(to) {
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
     return { left: 0, top: 0, behavior: 'smooth' }
   },
 })
