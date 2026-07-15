@@ -28,4 +28,5 @@ interface Window {
   PPaymentButtonBox?: new (config: PayPhonePaymentConfig) => {
     render: (containerId: string) => void
   }
+  __payphoneSdkStatus?: 'pending' | 'loaded' | 'error'
 }

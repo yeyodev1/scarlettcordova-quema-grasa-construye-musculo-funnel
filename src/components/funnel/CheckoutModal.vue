@@ -142,7 +142,11 @@ const renderPayment = async () => {
   const container = document.getElementById('payphone-button')
 
   if (!PaymentBox || !container) {
-    errorMessage.value = 'No fue posible cargar PayPhone. Si tienes un bloqueador de anuncios o privacidad activo (uBlock, Brave Shields, AdBlock), desactívalo en esta página y vuelve a intentar.'
+    const sdkStatus = window.__payphoneSdkStatus
+    console.error('[PayPhone] SDK no disponible. status:', sdkStatus, 'container:', Boolean(container))
+    errorMessage.value = sdkStatus === 'error'
+      ? 'No se pudo descargar el proveedor de pago (revisa tu conexión, VPN o bloqueador de anuncios) y vuelve a intentar.'
+      : 'El proveedor de pago tardó demasiado en responder. Vuelve a intentar en unos segundos.'
     return
   }
 

@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://cdn.payphonetodoesposible.com/box/v2.0/payphone-payment-box.css" />
     <script src="https://fast.wistia.com/player.js" async></script>
     <script src="https://fast.wistia.com/embed/johmj3affk.js" async type="module"></script>
-    <script src="https://cdn.payphonetodoesposible.com/box/v2.0/payphone-payment-box.js" async></script>
+    <script>window.__payphoneSdkStatus = 'pending'</script>
+    <script src="https://cdn.payphonetodoesposible.com/box/v2.0/payphone-payment-box.js" async onload="window.__payphoneSdkStatus = 'loaded'" onerror="window.__payphoneSdkStatus = 'error'"></script>
   </head>
   <body>
     <div id="app"></div>
