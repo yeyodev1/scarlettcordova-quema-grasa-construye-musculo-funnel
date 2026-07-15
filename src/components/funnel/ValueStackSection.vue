@@ -45,7 +45,7 @@ const vipFeatures = [
           <span>{{ item.number }}</span>
           <h3>{{ item.title }}</h3>
           <p>{{ item.text }}</p>
-          <div class="value-stack__item-value"><small>VALOR</small><strong>${{ item.value }}</strong></div>
+          <div class="value-stack__item-value"><small>VALOR REGULAR</small><del>${{ item.value }}</del><strong>GRATIS · $0 ADICIONAL</strong></div>
         </article>
       </div>
 
@@ -94,12 +94,25 @@ const vipFeatures = [
   &__items { display: flex; justify-content: center; align-items: stretch; flex-wrap: wrap; width: 100%; gap: 1rem; }
   &__item { display: flex; flex: 1 1 15rem; flex-direction: column; align-items: center; width: 100%; gap: 0.8rem; padding: 1.5rem; border: 1px solid rgba($primary-dark, 0.1); border-radius: 1rem; background: $LPB-SURFACE; text-align: center; transition: transform 0.25s ease, border-color 0.25s ease; }
   &__item:hover { transform: translateY(-0.35rem); border-color: $primary; }
-  &__item > span { width: 100%; color: $primary; font-size: 0.75rem; font-weight: 900; letter-spacing: 0.1em; }
-  &__item h3 { width: 100%; color: $primary-dark; font-size: 1.15rem; }
-  &__item p { width: 100%; color: $text-secondary; line-height: 1.55; }
-  &__item-value { display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.45rem; margin-top: auto; padding-top: 0.8rem; border-top: 1px solid rgba($primary-dark, 0.08); }
-  &__item-value small { color: $text-secondary; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; }
-  &__item-value strong { color: $LPB-GREEN-D; font-size: 1.25rem; }
+  &__item:nth-child(1), &__item:nth-child(8) { border-color: $primary-dark; background: $primary-dark; box-shadow: 0 1rem 2.2rem rgba($primary-dark, 0.14); }
+  &__item:nth-child(1) h3, &__item:nth-child(8) h3 { color: $white; }
+  &__item:nth-child(1) p, &__item:nth-child(8) p { color: rgba($white, 0.72); }
+  &__item:nth-child(1) &__item-value, &__item:nth-child(8) &__item-value { border-top-color: rgba($white, 0.14); }
+  &__item:nth-child(1) &__item-value small, &__item:nth-child(8) &__item-value small { color: rgba($white, 0.58); }
+  &__item:nth-child(1) &__item-value strong, &__item:nth-child(8) &__item-value strong { color: $primary; }
+  &__item:nth-child(2), &__item:nth-child(5) { border-color: #efb8a6; background: #fff0ea; }
+  &__item:nth-child(2) > span, &__item:nth-child(5) > span, &__item:nth-child(2) &__item-value strong, &__item:nth-child(5) &__item-value strong { color: #bf5139; }
+  &__item:nth-child(3), &__item:nth-child(6) { border-color: #b7cdea; background: #edf4ff; }
+  &__item:nth-child(3) > span, &__item:nth-child(6) > span, &__item:nth-child(3) &__item-value strong, &__item:nth-child(6) &__item-value strong { color: #315f96; }
+  &__item:nth-child(4), &__item:nth-child(7) { border-color: #a8dcc2; background: #e8f8f0; }
+  &__item:nth-child(4) > span, &__item:nth-child(7) > span, &__item:nth-child(4) &__item-value strong, &__item:nth-child(7) &__item-value strong { color: $LPB-GREEN-D; }
+  &__item > span { width: 100%; color: $primary; font-size: 12px; font-weight: 900; letter-spacing: 0.1em; }
+  &__item h3 { width: 100%; color: $primary-dark; font-size: 18px; line-height: 1.3; }
+  &__item p { width: 100%; color: $text-secondary; font-size: 15px; line-height: 1.55; }
+  &__item-value { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; width: 100%; gap: 0.45rem; margin-top: auto; padding-top: 0.8rem; border-top: 1px solid rgba($primary-dark, 0.08); }
+  &__item-value small { color: $text-secondary; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; }
+  &__item-value del { color: $alert-error; font-size: 16px; font-weight: 900; text-decoration-thickness: 0.14rem; }
+  &__item-value strong { width: 100%; padding: 0.45rem 0.55rem; border-radius: 0.4rem; background: rgba($primary, 0.14); color: $LPB-GREEN-D; font-size: 12px; letter-spacing: 0.06em; }
   &__summary { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 0.8rem; padding: clamp(1.5rem, 4vw, 2.5rem); border-radius: 1.2rem; background: $primary-dark; color: $white; text-align: center; }
   &__summary > p:first-child { width: 100%; color: $primary; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.12em; }
   &__summary > del { width: 100%; color: rgba($white, 0.55); font-size: 1.4rem; font-weight: 800; }
