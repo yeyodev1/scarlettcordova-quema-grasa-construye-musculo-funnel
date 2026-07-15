@@ -4,11 +4,14 @@ import { useRouter } from 'vue-router'
 import { getAcademyLoginUrl } from '@/config/environment'
 import { paymentService } from '@/services/paymentService'
 import type { ConfirmPaymentResponse } from '@/services/paymentService'
+import { trackMetaPurchase } from '@/services/metaTracking'
 
 type PaymentStatus = 'idle' | 'confirming' | 'approved' | 'error'
 type CachedPaymentResult = Pick<ConfirmPaymentResponse, 'plainPassword'> & {
   message: string
   email: string
+  amount?: number
+  plan?: ConfirmPaymentResponse['plan']
 }
 
 const status = ref<PaymentStatus>('idle')
@@ -44,6 +47,10 @@ const applyApprovedResult = (id: string, result: CachedPaymentResult) => {
   message.value = result.message
   customerEmail.value = result.email
   if (result.plainPassword) credentials.value = { email: result.email, plainPassword: result.plainPassword }
+  if (result.amount && !sessionStorage.getItem(`meta_purchase_${id}`)) {
+    trackMetaPurchase(id, result.amount, result.plan)
+    sessionStorage.setItem(`meta_purchase_${id}`, 'sent')
+  }
 }
 
 const sendAccessEmail = async () => {
@@ -91,6 +98,8 @@ onMounted(async () => {
       message: 'Pago aprobado. Tu acceso a Bakanology ya está activo.',
       email: result.email || '',
       plainPassword: result.plainPassword,
+      amount: result.amount,
+      plan: result.plan,
     }
     writeCachedResult(id, approved)
     applyApprovedResult(id, approved)

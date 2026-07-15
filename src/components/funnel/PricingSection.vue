@@ -2,12 +2,17 @@
 import { ref } from 'vue'
 import CheckoutModal from './CheckoutModal.vue'
 import PlanCard from './PlanCard.vue'
+import { trackMetaAddToCart } from '@/services/metaTracking'
 
 const monthlyFeatures = ['Método Bakano paso a paso', 'Cursos de ventas y tráfico', 'Guiones de anuncios ganadores', 'Acceso semanal a expertos'] as const
 const lifetimeFeatures = ['Acceso de por vida a Bakanology', 'CRM Bakanology incluido', 'Telegram VIP incluido', 'Un único pago, sin mensualidades'] as const
 const checkoutOpen = ref(false)
 const selectedPlan = ref<'monthly' | 'lifetime'>('monthly')
-const openCheckout = (plan: 'monthly' | 'lifetime') => { selectedPlan.value = plan; checkoutOpen.value = true }
+const openCheckout = (plan: 'monthly' | 'lifetime') => {
+  selectedPlan.value = plan
+  checkoutOpen.value = true
+  trackMetaAddToCart(plan, plan === 'monthly' ? 37 : 297)
+}
 </script>
 
 <template>

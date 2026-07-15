@@ -21,6 +21,9 @@ export interface ConfirmPaymentResponse {
   plainPassword?: string
   email?: string
   stripePaymentStatus?: string
+  amount?: number
+  currency?: 'USD'
+  plan?: CheckoutPlan | 'annual'
 }
 
 class PaymentService extends APIBase {
