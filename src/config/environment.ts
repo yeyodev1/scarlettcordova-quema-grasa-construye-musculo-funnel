@@ -16,7 +16,7 @@ export function getFrontendBaseUrl(): string {
   const environment = getAppEnvironment()
   if (environment === 'local') return 'http://localhost:5173'
   if (environment === 'testing') return 'https://testing-storybrand-frontend.bakano.ec'
-  return 'https://vital360.luisapitabejarano.com'
+  return 'https://academia.luisapitabejarano.com'
 }
 
 export function getPaymentResponseUrl(): string {
