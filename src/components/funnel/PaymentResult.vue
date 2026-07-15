@@ -18,7 +18,7 @@ const router = useRouter()
 
 const retryPayment = () => router.replace({ path: '/', hash: '#oferta' })
 const goToCommunityLogin = () => {
-  window.open('https://academia.luisapitabejarano.com/login', '_blank')
+  window.open('https://luisapitabejarano.com/login', '_blank')
 }
 
 const sendAccessEmail = async () => {
