@@ -35,11 +35,40 @@ const sendAccessEmail = async () => {
   }
 }
 
-const cleanPaymentParams = () => {
-  const url = new URL(window.location.href)
-  url.searchParams.delete('id')
-  url.searchParams.delete('clientTransactionId')
-  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
+interface CachedPaymentResult {
+  status: 'approved' | 'error'
+  message: string
+  customerEmail: string
+  emailStatus: 'idle' | 'sent' | 'failed'
+  plainPassword?: string
+}
+
+const resultCacheKey = (transactionId: string) => `payphone_result_${transactionId}`
+
+const readCachedResult = (transactionId: string): CachedPaymentResult | null => {
+  try {
+    const raw = localStorage.getItem(resultCacheKey(transactionId))
+    return raw ? (JSON.parse(raw) as CachedPaymentResult) : null
+  } catch {
+    return null
+  }
+}
+
+const writeCachedResult = (transactionId: string, result: CachedPaymentResult) => {
+  try {
+    localStorage.setItem(resultCacheKey(transactionId), JSON.stringify(result))
+  } catch {
+    // localStorage no disponible (modo privado): la recarga simplemente no restaurará el estado.
+  }
+}
+
+const applyCachedResult = (transactionId: string, cached: CachedPaymentResult) => {
+  status.value = cached.status
+  message.value = cached.message
+  customerEmail.value = cached.customerEmail
+  emailStatus.value = cached.emailStatus
+  clientTransactionId.value = transactionId
+  if (cached.plainPassword) credentials.value = { email: cached.customerEmail, plainPassword: cached.plainPassword }
 }
 
 onMounted(async () => {
@@ -49,6 +78,16 @@ onMounted(async () => {
   if (!id || !transactionId) {
     status.value = 'error'
     message.value = 'Los datos de la transacción no son válidos.'
+    return
+  }
+
+  // Si ya confirmamos esta transacción antes, restauramos el resultado sin volver a
+  // llamar al backend: /payments/confirm reenvía el correo de bienvenida y reporta un
+  // evento "Purchase" a Meta Pixel cada vez que se ejecuta, así que reconfirmar en cada
+  // recarga duplicaría esos efectos.
+  const cached = readCachedResult(transactionId)
+  if (cached) {
+    applyCachedResult(transactionId, cached)
     return
   }
 
@@ -62,6 +101,7 @@ onMounted(async () => {
       message.value = result.status === 'canceled'
         ? `El pago fue cancelado${reason ? `: ${reason.toLowerCase()}` : ''}. No se activó ningún acceso. Puedes intentarlo nuevamente.`
         : 'No pudimos completar el pago. No se activó ningún acceso y puedes intentarlo nuevamente.'
+      writeCachedResult(transactionId, { status: 'error', message: message.value, customerEmail: '', emailStatus: 'idle' })
       return
     }
 
@@ -91,10 +131,18 @@ onMounted(async () => {
         emailStatus.value = 'failed'
       }
     }
-    cleanPaymentParams()
+
+    writeCachedResult(transactionId, {
+      status: 'approved',
+      message: message.value,
+      customerEmail: customerEmail.value,
+      emailStatus: emailStatus.value,
+      plainPassword: result.plainPassword,
+    })
   } catch (error) {
     status.value = 'error'
     message.value = error instanceof Error ? error.message : 'No fue posible confirmar el pago.'
+    writeCachedResult(transactionId, { status: 'error', message: message.value, customerEmail: '', emailStatus: 'idle' })
   }
 })
 </script>
