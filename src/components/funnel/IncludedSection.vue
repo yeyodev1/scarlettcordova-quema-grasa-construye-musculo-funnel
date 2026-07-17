@@ -1,41 +1,49 @@
 <script setup lang="ts">
-import { includedItems } from '@/config/funnelContent'
+import { funnelImages, learningItems, macroTargets } from '@/config/funnelContent'
 </script>
 
 <template>
-  <section class="included section-pad">
-    <div class="funnel-container included__inner">
-      <div class="included__visual">
-        <small>BAKANOLOGY</small>
-        <strong>Tu sistema de captación, empaquetado.</strong>
-        <div><span>ADS</span><i>→</i><span>LEADS</span><i>→</i><span>VENTAS</span></div>
-        <b>MÉTODO BAKANO</b>
+  <section class="learning section-pad">
+    <div class="learning__inner funnel-container">
+      <div class="learning__heading">
+        <p class="eyebrow eyebrow--light"><span></span> DENTRO DEL EBOOK</p>
+        <h2>Domina tu proceso.<br><em>Sin improvisar.</em></h2>
+        <p>Nutrición, hábitos y entrenamiento explicados para que entiendas qué hacer y, sobre todo, por qué funciona.</p>
       </div>
-      <div class="included__copy">
-        <p class="eyebrow"><span></span> TODO DENTRO DE BAKANOLOGY</p>
-        <h2>Copia el sistema que usamos en nuestra agencia.</h2>
-        <p class="section-lead">No necesitas estudiar marketing durante años. Necesitas saber qué anuncio lanzar, cómo filtrar y qué pasos automatizar.</p>
-        <div class="included__list"><div v-for="item in includedItems" :key="item"><span>✓</span><p>{{ item }}</p></div></div>
-        <a href="#oferta" class="primary-button">QUIERO ACCESO A BAKANOLOGY <span>↓</span></a>
+      <div class="learning__body">
+        <div class="learning__visual"><img :src="funnelImages.learning" alt="Scarlett Cordova en el gimnasio" width="650" height="950" loading="lazy"><span>GUÍA PASO A PASO</span></div>
+        <div class="learning__list"><article v-for="item in learningItems" :key="item.number"><b>{{ item.number }}</b><div><h3>{{ item.title }}</h3><p>{{ item.text }}</p></div></article></div>
+      </div>
+      <div class="macros">
+        <div><small>TU FÓRMULA</small><strong>Macros sin misterio.</strong></div>
+        <article v-for="macro in macroTargets" :key="macro.label"><span>{{ macro.label }}</span><b>{{ macro.value }}</b><small>{{ macro.detail }}</small></article>
       </div>
     </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
-.included { background: $primary-surface; }
-.included__inner { flex-direction: row; gap: clamp(2.5rem, 7vw, 7rem); }
-.included__visual, .included__copy { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; width: 100%; gap: 1.4rem; text-align: center; }
-.included__visual { justify-content: center; max-width: 31rem; min-height: 34rem; padding: 2.2rem; border-radius: 1.5rem; background: radial-gradient(circle at 80% 10%, rgba($primary, 0.45), transparent 28%), linear-gradient(145deg, $secondary-dark, $primary-dark); color: $white; box-shadow: 0 2rem 4rem rgba($primary-dark, 0.2); }
-.included__visual > small { color: $primary; font-weight: 900; letter-spacing: 0.18em; }
-.included__visual > strong { width: 100%; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.02; }
-.included__visual > div { display: flex; justify-content: center; flex-wrap: wrap; width: 100%; gap: 0.55rem; }
-.included__visual > div span { padding: 0.65rem; border: 1px solid rgba($white, 0.2); border-radius: 0.55rem; font-size: 0.8rem; font-weight: 900; }
-.included__visual i { color: $primary; font-style: normal; }
-.included__visual b { padding: 0.7rem 1rem; border-radius: 999px; background: $BAKANO-GREEN; color: $primary-dark; font-size: 0.8rem; letter-spacing: 0.07em; }
-.included__list { display: flex; flex-direction: column; width: 100%; gap: 0.7rem; }
-.included__list > div { display: flex; align-items: center; width: 100%; gap: 0.8rem; }
-.included__list span { display: flex; justify-content: center; align-items: center; width: 1.7rem; height: 1.7rem; flex-shrink: 0; border-radius: 50%; background: $primary; color: $white; font-weight: 900; }
-.included__list p { width: 100%; color: $primary-dark; font-weight: 650; text-align: left; }
-@media (max-width: 800px) { .included__inner { flex-direction: column; } .included__visual { max-width: 30rem; min-height: 27rem; } }
+.learning { background: $primary-dark; color: $white; }
+.learning__inner { flex-direction: column; gap: 3rem; }
+.learning__heading { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 58rem; gap: 1rem; text-align: center; }
+.learning h2 { color: $white; text-transform: uppercase; }
+.learning h2 em { color: $primary; font-style: normal; }
+.learning__heading > p:last-child { max-width: 43rem; color: rgba($white, 0.62); line-height: 1.65; }
+.learning__body { display: flex; align-items: stretch; width: 100%; gap: clamp(1.5rem, 5vw, 4rem); }
+.learning__visual { position: relative; display: flex; flex: 0 1 25rem; width: 100%; min-height: 38rem; overflow: hidden; border-radius: 12rem 12rem 1rem 1rem; }
+.learning__visual img { width: 100%; height: 100%; object-fit: cover; }
+.learning__visual span { position: absolute; right: 1rem; bottom: 1rem; left: 1rem; padding: 0.8rem; border-radius: 999px; background: $secondary; color: $primary-dark; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.12em; text-align: center; }
+.learning__list { display: flex; flex: 1 1 0; flex-direction: column; width: 100%; }
+.learning__list article { display: flex; width: 100%; gap: 1rem; padding: 1.15rem 0; border-bottom: 1px solid rgba($white, 0.12); }
+.learning__list article > b { color: $primary; font-size: 0.8rem; }
+.learning__list article > div { display: flex; flex-direction: column; width: 100%; gap: 0.35rem; }
+.learning__list h3 { font-size: 1.25rem; text-transform: uppercase; }
+.learning__list p { color: rgba($white, 0.58); line-height: 1.5; }
+.macros { display: flex; align-items: stretch; width: 100%; overflow: hidden; border: 1px solid rgba($white, 0.14); border-radius: 1rem; }
+.macros > div, .macros article { display: flex; flex: 1 1 0; flex-direction: column; justify-content: center; width: 100%; gap: 0.35rem; padding: 1.3rem; border-right: 1px solid rgba($white, 0.14); }
+.macros > div { background: $primary; }
+.macros > div small, .macros article span { font-size: 0.7rem; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+.macros article span { color: $secondary; }
+.macros article small { color: rgba($white, 0.5); }
+@media (max-width: 800px) { .learning__body { flex-direction: column; } .learning__visual { flex-basis: auto; max-width: 28rem; min-height: 34rem; } .macros { flex-direction: column; } .macros > div, .macros article { border-right: 0; border-bottom: 1px solid rgba($white, 0.14); } }
 </style>

@@ -6,46 +6,51 @@ interface ApiResponse<T> {
   message: string
 }
 
-export type CheckoutPlan = 'monthly' | 'lifetime'
-export type CheckoutExtra = 'crm' | 'telegram_vip'
+export type CheckoutExtra = 'recipe_book' | 'whatsapp_vip'
 
-export interface CheckoutSessionResponse {
-  url: string
-  sessionId: string
+export interface PaymentBoxConfig {
+  token: string
+  storeId: string
+  amount: number
+  amountWithoutTax: number
+  currency: 'USD'
   clientTransactionId: string
+  reference: string
+  responseUrl: string
+  product: 'quema_grasa_construye_musculo'
+  extras: CheckoutExtra[]
 }
 
-export interface ConfirmPaymentResponse {
+export interface ConfirmEbookPaymentResponse {
   status: 'pending' | 'approved' | 'failed' | 'canceled'
-  isNewUser?: boolean
-  plainPassword?: string
-  email?: string
-  stripePaymentStatus?: string
-  amount?: number
-  currency?: 'USD'
-  plan?: CheckoutPlan | 'annual'
+  product: 'quema_grasa_construye_musculo'
+  extras: CheckoutExtra[]
+  amount: number
+  amountCents: number
+  currency: 'USD'
+  clientTransactionId: string
+  transactionId?: number
+  email: string
 }
 
 class PaymentService extends APIBase {
-  async createCheckoutSession(payload: {
+  async prepareEbookPayment(payload: {
     email: string
     name: string
     lastName: string
-    plan: CheckoutPlan
     extras: CheckoutExtra[]
   }) {
-    return this.post<ApiResponse<CheckoutSessionResponse>>('stripe/funnel/create-session', {
+    return this.post<ApiResponse<PaymentBoxConfig>>('payments/ebook/prepare-box', {
       ...payload,
       origin: getFrontendBaseUrl(),
     })
   }
 
-  async verifyPayment(sessionId: string) {
-    return this.get<ApiResponse<ConfirmPaymentResponse>>(`stripe/verify/${encodeURIComponent(sessionId)}`)
-  }
-
-  async resendWelcomeEmail(sessionId: string) {
-    return this.post<ApiResponse<{ resent: boolean; email: string }>>('stripe/resend-email', { sessionId })
+  async confirmEbookPayment(id: string, clientTransactionId: string) {
+    return this.post<ApiResponse<ConfirmEbookPaymentResponse>>('payments/ebook/confirm', {
+      id,
+      clientTransactionId,
+    })
   }
 }
 

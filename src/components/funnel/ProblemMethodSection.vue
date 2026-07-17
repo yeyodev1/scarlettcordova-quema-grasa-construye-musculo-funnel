@@ -1,61 +1,46 @@
 <script setup lang="ts">
-import { methodSteps } from '@/config/funnelContent'
-
-const painPoints = [
-  'Publicas contenido que no conecta y termina sin generar ventas.',
-  'Escribes a tus contactos en WhatsApp esperando cerrar algo.',
-  'Pagas marketing que nunca se refleja en tu facturación.',
-] as const
+import { funnelImages, storyMilestones } from '@/config/funnelContent'
 </script>
 
 <template>
-  <section class="problem section-pad">
-    <div class="funnel-container problem__inner">
-      <div class="problem__intro">
-        <div class="problem__copy">
-          <p class="eyebrow"><span></span> NO ES TU CULPA</p>
-          <h2>Te enseñaron estrategias lentas para un negocio que necesita vender hoy.</h2>
-          <p class="section-lead">No necesitas convertirte en influencer. Necesitas una estructura capaz de traer personas calificadas todos los días.</p>
-          <div class="problem__pains"><div v-for="pain in painPoints" :key="pain"><span>×</span><p>{{ pain }}</p></div></div>
-        </div>
-        <aside class="problem__truth">
-          <small>LA VERDAD INCÓMODA</small>
-          <strong>El contenido orgánico no es un sistema de captación.</strong>
-          <p>Cuando cada venta depende de publicar, perseguir o esperar, tu facturación también depende de tu energía y de la suerte.</p>
-          <b>Likes ≠ clientes</b>
-        </aside>
+  <section class="story section-pad">
+    <div class="story__inner funnel-container">
+      <div class="story__visual">
+        <img :src="funnelImages.story" alt="Scarlett Cordova de espalda con ropa deportiva DFYNE" width="700" height="1050" loading="lazy">
+        <span>NO MÁS<br>CASTIGO</span>
       </div>
-      <div class="method">
-        <div class="method__heading"><p class="eyebrow"><span></span> EL MÉTODO BAKANO</p><h2>Una tubería simple que puedes instalar en tu negocio.</h2></div>
-        <div class="method__steps"><article v-for="step in methodSteps" :key="step.number"><span>{{ step.number }}</span><h3>{{ step.title }}</h3><p>{{ step.text }}</p></article></div>
-        <div class="method__flow"><strong>ATRAE</strong><span>→</span><strong>CUALIFICA</strong><span>→</span><strong>CONVIERTE</strong><span>→</span><strong>ESCALA</strong></div>
+      <div class="story__copy">
+        <p class="eyebrow"><span></span> MI HISTORIA</p>
+        <h2>Del castigo<br><em>a la conexión.</em></h2>
+        <p class="story__lead">Durante años, a muchas nos enseñaron a mirar nuestro cuerpo desde el rechazo. Buscando estándares inalcanzables, caemos en el ciclo de dietas extremas, comparaciones y castigos en el gimnasio.</p>
+        <p class="story__label">YO ESTUVE AHÍ:</p>
+        <div class="story__timeline">
+          <article v-for="(milestone, index) in storyMilestones" :key="milestone"><b>0{{ index + 1 }}</b><p>{{ milestone }}</p></article>
+        </div>
+        <p class="story__close">Un día decidí parar la pelea con mi reflejo y empezar a entenderlo. La clave no era sufrir, sino aplicar la ciencia con un déficit calórico estratégico y sostenible.</p>
+        <strong>Este ebook resume todo lo que me hubiese encantado saber antes.</strong>
       </div>
     </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
-.problem { background: $white; }
-.problem__inner { flex-direction: column; gap: 7rem; }
-.problem__intro { display: flex; width: 100%; gap: clamp(2rem, 6vw, 6rem); }
-.problem__copy, .problem__truth { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; width: 100%; gap: 1.35rem; text-align: center; }
-.problem__pains { display: flex; flex-direction: column; width: 100%; gap: 0.75rem; }
-.problem__pains > div { display: flex; align-items: center; width: 100%; gap: 0.8rem; padding: 1rem; border: 1px solid rgba($primary-dark, 0.09); border-radius: 0.7rem; color: $text-secondary; }
-.problem__pains span { color: $primary; font-size: 1.5rem; font-weight: 900; }
-.problem__pains p { width: 100%; text-align: left; }
-.problem__truth { justify-content: center; padding: clamp(2rem, 5vw, 4rem); border-radius: 1.4rem; background: $primary-dark; color: $white; }
-.problem__truth small { color: $primary; font-weight: 900; letter-spacing: 0.14em; }
-.problem__truth strong { width: 100%; font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.05; }
-.problem__truth p { width: 100%; color: rgba($white, 0.68); line-height: 1.65; }
-.problem__truth b { padding: 0.65rem 1rem; border-radius: 999px; background: rgba($primary, 0.14); color: $primary; }
-.method { display: flex; flex-direction: column; width: 100%; gap: 2rem; }
-.method__heading { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 0.8rem; text-align: center; }
-.method__steps { display: flex; flex-wrap: wrap; width: 100%; gap: 1rem; }
-.method__steps article { display: flex; flex: 1 1 15rem; flex-direction: column; align-items: center; width: 100%; gap: 1rem; padding: 1.7rem; border-radius: 1rem; background: $primary-dark; color: $white; text-align: center; }
-.method__steps article > span { color: $primary; font-size: 0.82rem; font-weight: 900; }
-.method__steps h3 { width: 100%; font-size: 1.35rem; }
-.method__steps p { width: 100%; color: rgba($white, 0.68); line-height: 1.55; }
-.method__flow { display: flex; justify-content: center; flex-wrap: wrap; width: 100%; gap: 0.9rem; padding: 1.4rem; border-radius: 1rem; background: $primary-light; }
-.method__flow span { color: $primary; }
-@media (max-width: 800px) { .problem__inner { gap: 4rem; } .problem__intro { flex-direction: column; } }
+.story { background: $primary-surface; }
+.story__inner { align-items: stretch; gap: clamp(2.5rem, 7vw, 7rem); }
+.story__visual, .story__copy { display: flex; flex: 1 1 0; flex-direction: column; width: 100%; }
+.story__visual { position: relative; max-width: 31rem; min-height: 43rem; overflow: hidden; border-radius: 1rem; background: $primary-light; }
+.story__visual img { width: 100%; height: 100%; object-fit: cover; }
+.story__visual span { position: absolute; bottom: 1.3rem; left: 1.3rem; padding: 0.8rem 1rem; background: $primary; color: $white; font-size: 1.3rem; font-weight: 900; line-height: 0.9; transform: rotate(-3deg); }
+.story__copy { justify-content: center; align-items: flex-start; gap: 1.15rem; }
+.story .eyebrow { justify-content: flex-start; text-align: left; }
+h2 { text-align: left; text-transform: uppercase; }
+h2 em { color: $primary; font-style: normal; }
+.story__lead, .story__close { color: $text-secondary; font-size: 1rem; line-height: 1.7; }
+.story__label { color: $primary-dark; font-size: 0.76rem; font-weight: 900; letter-spacing: 0.14em; }
+.story__timeline { display: flex; flex-direction: column; width: 100%; gap: 0.7rem; }
+.story__timeline article { display: flex; align-items: center; width: 100%; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid rgba($primary-dark, 0.12); }
+.story__timeline b { color: $primary; font-size: 1.15rem; }
+.story__timeline p { color: $primary-dark; line-height: 1.5; }
+.story__copy > strong { width: 100%; padding: 1rem; border-left: 3px solid $secondary; background: $primary-dark; color: $white; line-height: 1.45; }
+@media (max-width: 800px) { .story__inner { flex-direction: column; } .story__visual { max-width: none; min-height: 34rem; } }
 </style>

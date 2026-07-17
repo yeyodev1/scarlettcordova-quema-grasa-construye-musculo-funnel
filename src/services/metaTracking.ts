@@ -1,5 +1,3 @@
-import APIBase from './httpBase'
-
 type MetaEventName = 'PageView' | 'AddToCart' | 'Purchase'
 type MetaPixel = ((...args: unknown[]) => void) & {
   callMethod?: (...args: unknown[]) => void
@@ -19,45 +17,16 @@ declare global {
 const pixelId = import.meta.env.VITE_META_PIXEL_ID
 let initialized = false
 
-class MetaTrackingApi extends APIBase {
-  async track(eventName: 'PageView' | 'AddToCart', eventId: string, customData?: Record<string, unknown>) {
-    return this.post('meta/events', {
-      eventName,
-      eventId,
-      sourceUrl: window.location.href,
-      fbp: readCookie('_fbp'),
-      fbc: readCookie('_fbc'),
-      customData,
-    })
-  }
-}
-
-const metaTrackingApi = new MetaTrackingApi()
-
-function readCookie(name: string) {
-  const prefix = `${name}=`
-  return document.cookie.split(';').map((part) => part.trim()).find((part) => part.startsWith(prefix))?.slice(prefix.length)
-}
-
-function createEventId(eventName: MetaEventName) {
-  return `${eventName.toLowerCase()}_${crypto.randomUUID()}`
-}
-
 function initializePixel() {
   if (initialized || !pixelId) return
   initialized = true
-
-  const fbq = ((...args: unknown[]) => {
-    if (fbq.callMethod) fbq.callMethod(...args)
-    else fbq.queue.push(args)
-  }) as MetaPixel
+  const fbq = ((...args: unknown[]) => fbq.callMethod ? fbq.callMethod(...args) : fbq.queue.push(args)) as MetaPixel
   fbq.queue = []
   fbq.loaded = true
   fbq.version = '2.0'
   fbq.push = fbq
   window.fbq = fbq
   window._fbq = fbq
-
   const script = document.createElement('script')
   script.async = true
   script.src = 'https://connect.facebook.net/en_US/fbevents.js'
@@ -65,35 +34,27 @@ function initializePixel() {
   fbq('init', pixelId)
 }
 
-function trackBrowserEvent(eventName: MetaEventName, eventId: string, customData?: Record<string, unknown>) {
+function track(eventName: MetaEventName, data?: Record<string, unknown>, eventId?: string) {
   initializePixel()
-  window.fbq?.('track', eventName, customData || {}, { eventID: eventId })
+  window.fbq?.('track', eventName, data || {}, eventId ? { eventID: eventId } : undefined)
 }
 
-function trackWithConversionsApi(eventName: 'PageView' | 'AddToCart', customData?: Record<string, unknown>) {
-  const eventId = createEventId(eventName)
-  trackBrowserEvent(eventName, eventId, customData)
-  void metaTrackingApi.track(eventName, eventId, customData).catch(() => undefined)
-}
+export const trackMetaPageView = () => track('PageView')
 
-export function trackMetaPageView() {
-  trackWithConversionsApi('PageView')
-}
-
-export function trackMetaAddToCart(plan: 'monthly' | 'lifetime', value: number) {
-  trackWithConversionsApi('AddToCart', {
+export function trackMetaAddToCart() {
+  track('AddToCart', {
     currency: 'USD',
-    value,
-    content_ids: [plan],
+    value: 33,
+    content_ids: ['quema_grasa_construye_musculo'],
     content_type: 'product',
   })
 }
 
-export function trackMetaPurchase(sessionId: string, value: number, plan?: string) {
-  trackBrowserEvent('Purchase', `purchase_${sessionId}`, {
+export function trackMetaPurchase(clientTransactionId: string, value: number) {
+  track('Purchase', {
     currency: 'USD',
     value,
-    content_ids: plan ? [plan] : undefined,
+    content_ids: ['quema_grasa_construye_musculo'],
     content_type: 'product',
-  })
+  }, `purchase_${clientTransactionId}`)
 }
