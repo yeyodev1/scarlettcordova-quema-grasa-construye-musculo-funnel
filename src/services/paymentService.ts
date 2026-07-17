@@ -16,7 +16,6 @@ export interface PaymentBoxConfig {
   currency: 'USD'
   clientTransactionId: string
   reference: string
-  responseUrl: string
   product: 'quema_grasa_construye_musculo'
   extras: CheckoutExtra[]
 }
@@ -24,6 +23,7 @@ export interface PaymentBoxConfig {
 export interface ConfirmEbookPaymentResponse {
   status: 'pending' | 'approved' | 'failed' | 'canceled'
   product: 'quema_grasa_construye_musculo'
+  productName: 'Quema Grasa, Construye Músculo'
   extras: CheckoutExtra[]
   amount: number
   amountCents: number
@@ -31,6 +31,8 @@ export interface ConfirmEbookPaymentResponse {
   clientTransactionId: string
   transactionId?: number
   email: string
+  emailSent: boolean
+  returnUrl?: string
 }
 
 class PaymentService extends APIBase {

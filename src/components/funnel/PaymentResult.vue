@@ -9,6 +9,18 @@ const message = ref('Confirmando tu pago con PayPhone…')
 const result = ref<ConfirmEbookPaymentResponse | null>(null)
 const cacheKey = (clientTransactionId: string) => `ebook_payment_${clientTransactionId}`
 
+function redirectToPurchaseOrigin(payment: ConfirmEbookPaymentResponse): boolean {
+  if (!payment.returnUrl) return false
+  try {
+    const target = new URL(payment.returnUrl)
+    if (target.origin === window.location.origin) return false
+    window.location.replace(target.toString())
+    return true
+  } catch {
+    return false
+  }
+}
+
 function readApprovedCache(clientTransactionId: string) {
   try {
     const cached = sessionStorage.getItem(cacheKey(clientTransactionId))
@@ -41,6 +53,7 @@ onMounted(async () => {
 
   const cached = readApprovedCache(clientTransactionId)
   if (cached) {
+    if (redirectToPurchaseOrigin(cached)) return
     applyApproved(cached)
     return
   }
@@ -48,6 +61,7 @@ onMounted(async () => {
   try {
     const response = await paymentService.confirmEbookPayment(id, clientTransactionId)
     const payment = response.data.data
+    if (redirectToPurchaseOrigin(payment)) return
     if (payment.status !== 'approved') {
       status.value = 'error'
       message.value = payment.status === 'canceled'
@@ -74,8 +88,8 @@ onMounted(async () => {
       <p class="result-card__message">{{ message }}</p>
       <template v-if="status === 'approved' && result">
         <div class="result-card__summary"><span><small>Total pagado</small><strong>${{ result.amount }} USD</strong></span><span><small>Correo</small><strong>{{ result.email }}</strong></span></div>
-        <div class="result-card__items"><p><b>✓</b> Ebook Quema Grasa, Construye Músculo</p><p v-if="result.extras.includes('recipe_book')"><b>✓</b> Recetario Secreto de Scarlett</p><p v-if="result.extras.includes('whatsapp_vip')"><b>✓</b> Grupo VIP de WhatsApp</p></div>
-        <p class="result-card__next">En la siguiente fase conectaremos esta compra con tu acceso al sitio de Scarlett Cordova. Conserva el correo usado en el pago.</p>
+        <div class="result-card__items"><p><b>✓</b> Ebook {{ result.productName }}</p><p v-if="result.extras.includes('recipe_book')"><b>✓</b> Recetario Secreto de Scarlett</p><p v-if="result.extras.includes('whatsapp_vip')"><b>✓</b> Grupo VIP de WhatsApp</p></div>
+        <p class="result-card__next">{{ result.emailSent ? 'Te enviamos el comprobante detallado de tu compra por correo.' : 'Tu compra está registrada. Conserva el correo usado en el pago para vincular tu acceso.' }}</p>
       </template>
       <a v-if="status !== 'confirming'" href="/#oferta">{{ status === 'approved' ? 'VOLVER AL INICIO' : 'INTENTAR NUEVAMENTE' }}</a>
       <small class="result-card__secure">Pago protegido y confirmado por PayPhone</small>

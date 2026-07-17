@@ -51,7 +51,6 @@ onMounted(async () => {
       currency: props.config.currency,
       storeId: props.config.storeId,
       reference: props.config.reference,
-      responseUrl: props.config.responseUrl,
       lang: 'es',
       defaultMethod: 'card',
       timeZone: -5,
