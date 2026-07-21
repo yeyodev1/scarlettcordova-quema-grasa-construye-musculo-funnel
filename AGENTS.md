@@ -2,6 +2,8 @@
 
 Vue 3 + TypeScript + Vite funnel for Scarlett Cordova's one-time digital offer, “Quema Grasa, Construye Músculo.”
 
+For the backapp API package (`*backapp/`), see `../../AGENTS.md`.
+
 ## Tooling
 
 - Use `pnpm`; `.npmrc` requires the hoisted linker and `pnpm-lock.yaml` is authoritative.
