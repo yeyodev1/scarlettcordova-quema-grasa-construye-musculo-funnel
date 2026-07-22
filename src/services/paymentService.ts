@@ -33,6 +33,15 @@ export interface ConfirmEbookPaymentResponse {
   email: string
   emailSent: boolean
   returnUrl?: string
+  credentials?: {
+    email: string
+    password: string
+  }
+}
+
+interface ResendCredentialsResponse {
+  email: string
+  password: string
 }
 
 class PaymentService extends APIBase {
@@ -52,6 +61,13 @@ class PaymentService extends APIBase {
     return this.post<ApiResponse<ConfirmEbookPaymentResponse>>('payments/ebook/confirm', {
       id,
       clientTransactionId,
+    })
+  }
+
+  async resendCredentials(clientTransactionId: string, newEmail?: string) {
+    return this.post<ApiResponse<ResendCredentialsResponse>>('payments/ebook/resend-credentials', {
+      clientTransactionId,
+      ...(newEmail ? { newEmail } : {}),
     })
   }
 }

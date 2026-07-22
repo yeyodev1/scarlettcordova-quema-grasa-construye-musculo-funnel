@@ -13,6 +13,24 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/components/funnel/PaymentResult.vue'),
     meta: { title: 'Confirmación de pago' },
   },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/LoginView.vue'),
+    meta: { title: 'Iniciar sesión' },
+  },
+  {
+    path: '/app',
+    name: 'App',
+    component: () => import('../views/AppView.vue'),
+    meta: { title: 'Mi Ebook', requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/NotFoundView.vue'),
+    meta: { title: 'Página no encontrada' },
+  },
 ]
 
 const router = createRouter({
@@ -33,7 +51,7 @@ router.beforeEach((to, _from, next) => {
   }
 
   if (to.path === '/login' && hasToken) {
-    return next({ path: '/', replace: true })
+    return next({ path: '/app', replace: true })
   }
 
   next()

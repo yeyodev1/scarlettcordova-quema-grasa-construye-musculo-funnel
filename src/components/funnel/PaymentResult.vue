@@ -9,6 +9,10 @@ const message = ref('Confirmando tu pago con PayPhone…')
 const result = ref<ConfirmEbookPaymentResponse | null>(null)
 const cacheKey = (clientTransactionId: string) => `ebook_payment_${clientTransactionId}`
 
+const resending = ref(false)
+const resendMessage = ref('')
+const newEmail = ref('')
+
 function redirectToPurchaseOrigin(payment: ConfirmEbookPaymentResponse): boolean {
   if (!payment.returnUrl) return false
   try {
@@ -38,6 +42,28 @@ function applyApproved(payment: ConfirmEbookPaymentResponse) {
   if (!sessionStorage.getItem(eventKey)) {
     trackMetaPurchase(payment.clientTransactionId, payment.amount)
     sessionStorage.setItem(eventKey, 'sent')
+  }
+}
+
+async function handleResend() {
+  if (!result.value) return
+  resending.value = true
+  resendMessage.value = ''
+  try {
+    const response = await paymentService.resendCredentials(
+      result.value.clientTransactionId,
+      newEmail.value || undefined,
+    )
+    const creds = response.data.data
+    result.value.credentials = creds
+    result.value.email = creds.email
+    resendMessage.value = 'Credenciales reenviadas correctamente'
+    newEmail.value = ''
+  } catch (caught) {
+    const apiError = caught as { message?: string }
+    resendMessage.value = apiError.message || 'Error al reenviar credenciales'
+  } finally {
+    resending.value = false
   }
 }
 
@@ -90,6 +116,25 @@ onMounted(async () => {
         <div class="result-card__summary"><span><small>Total pagado</small><strong>${{ result.amount }} USD</strong></span><span><small>Correo</small><strong>{{ result.email }}</strong></span></div>
         <div class="result-card__items"><p><b>✓</b> Ebook {{ result.productName }}</p><p v-if="result.extras.includes('recipe_book')"><b>✓</b> Recetario Secreto de Scarlett</p><p v-if="result.extras.includes('whatsapp_vip')"><b>✓</b> Grupo VIP de WhatsApp</p></div>
         <p class="result-card__next">{{ result.emailSent ? 'Te enviamos el comprobante detallado de tu compra por correo.' : 'Tu compra está registrada. Conserva el correo usado en el pago para vincular tu acceso.' }}</p>
+
+        <div v-if="result.credentials" class="result-card__credentials">
+          <p class="result-card__credentials-title">Tus credenciales de acceso</p>
+          <div class="result-card__credential"><span>Email</span><strong>{{ result.credentials.email }}</strong></div>
+          <div class="result-card__credential"><span>Contraseña</span><strong>{{ result.credentials.password }}</strong></div>
+          <p class="result-card__credentials-hint">Usá estas credenciales para iniciar sesión en <a href="/login">ebook.scarlettcordova.com/login</a>. También te las enviamos por correo.</p>
+        </div>
+
+        <div class="result-card__resend">
+          <p class="result-card__resend-title">¿No recibiste las credenciales?</p>
+          <label class="result-card__resend-field">
+            <span>Cambiar email (opcional)</span>
+            <input v-model="newEmail" type="email" placeholder="nuevo@email.com" />
+          </label>
+          <button class="result-card__resend-btn" :disabled="resending" @click="handleResend">
+            {{ resending ? 'Reenviando…' : 'Reenviar credenciales' }}
+          </button>
+          <p v-if="resendMessage" class="result-card__resend-message">{{ resendMessage }}</p>
+        </div>
       </template>
       <a v-if="status !== 'confirming'" href="/#oferta">{{ status === 'approved' ? 'VOLVER AL INICIO' : 'INTENTAR NUEVAMENTE' }}</a>
       <small class="result-card__secure">Pago protegido y confirmado por PayPhone</small>
@@ -115,8 +160,23 @@ h1 { color: $primary-dark; font-size: clamp(2.2rem, 7vw, 4rem); line-height: 0.9
 .result-card__items { display: flex; flex-direction: column; align-items: flex-start; width: 100%; gap: 0.6rem; padding: 1rem; border: 1px solid rgba($primary-dark, 0.12); border-radius: 0.8rem; text-align: left; }
 .result-card__items b { color: $primary; }
 .result-card__next { padding: 0.9rem; border-left: 3px solid $secondary; background: $primary-light; font-size: 0.85rem; text-align: left; }
+.result-card__credentials { display: flex; flex-direction: column; width: 100%; gap: 0.5rem; padding: 1.25rem; border: 2px dashed $primary; border-radius: 0.8rem; background: rgba($primary, 0.05); }
+.result-card__credentials-title { font-size: 0.78rem; font-weight: 700; color: $primary-dark; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
+.result-card__credential { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.6rem 0.8rem; border-radius: 0.5rem; background: $white; text-align: left; }
+.result-card__credential span { font-size: 0.68rem; color: $text-secondary; text-transform: uppercase; letter-spacing: 0.06em; }
+.result-card__credential strong { font-size: 1rem; font-family: 'Courier New', monospace; letter-spacing: 0.03em; word-break: break-all; }
+.result-card__credentials-hint { font-size: 0.75rem; color: $text-secondary; margin: 0; line-height: 1.5; }
+.result-card__credentials-hint a { color: $primary; }
+.result-card__resend { display: flex; flex-direction: column; width: 100%; gap: 0.6rem; padding: 1rem; border: 1px solid #e0d8cf; border-radius: 0.8rem; }
+.result-card__resend-title { font-size: 0.82rem; font-weight: 700; color: $primary-dark; margin: 0; }
+.result-card__resend-field { display: flex; flex-direction: column; gap: 0.25rem; }
+.result-card__resend-field span { font-size: 0.72rem; color: $text-secondary; }
+.result-card__resend-field input { padding: 0.6rem 0.8rem; border: 1px solid #e0d8cf; border-radius: 0.5rem; font-size: 0.85rem; outline: none; &:focus { border-color: $primary; } }
+.result-card__resend-btn { padding: 0.75rem; border: none; border-radius: 999px; background: $primary; color: $white; font-size: 0.82rem; font-weight: 800; cursor: pointer; &:disabled { opacity: 0.5; cursor: not-allowed; } &:hover:not(:disabled) { opacity: 0.85; } }
+.result-card__resend-message { margin: 0; font-size: 0.78rem; color: $secondary; text-align: center; }
 .result-card > a { width: 100%; padding: 1rem; border-radius: 999px; background: $primary; color: $white; font-weight: 900; text-decoration: none; }
 .result-card__secure { color: $text-secondary; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 520px) { .result-card__summary { flex-direction: column; } .result-card__summary span + span { border-top: 1px solid rgba($white, 0.14); border-left: 0; } }
 </style>
+

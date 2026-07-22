@@ -6,8 +6,8 @@ class APIBase {
   private baseUrl: string
   private axiosInstance = axios.create()
 
-  constructor() {
-    const raw = getApiBaseUrl()
+  constructor(customBaseUrl?: string) {
+    const raw = customBaseUrl || getApiBaseUrl()
     const trimmed = raw.replace(/\/+$/, '')
     this.baseUrl = trimmed.endsWith('/api') || /\/api\//.test(trimmed)
       ? trimmed
