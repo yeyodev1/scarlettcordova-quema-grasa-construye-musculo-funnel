@@ -114,7 +114,7 @@ onMounted(async () => {
       <p class="result-card__message">{{ message }}</p>
       <template v-if="status === 'approved' && result">
         <div class="result-card__summary"><span><small>Total pagado</small><strong>${{ result.amount }} USD</strong></span><span><small>Correo</small><strong>{{ result.email }}</strong></span></div>
-        <div class="result-card__items"><p><b>✓</b> Ebook {{ result.productName }}</p><p v-if="result.extras.includes('recipe_book')"><b>✓</b> Recetario Secreto de Scarlett</p><p v-if="result.extras.includes('whatsapp_vip')"><b>✓</b> Grupo VIP de WhatsApp</p></div>
+        <div class="result-card__items"><p><b>✓</b> Ebook {{ result.productName }}</p><p v-if="result.extras.includes('recipe_book')"><b>✓</b> Recetario Secreto de Scarlett</p></div>
         <p class="result-card__next">{{ result.emailSent ? 'Te enviamos el comprobante detallado de tu compra por correo.' : 'Tu compra está registrada. Conserva el correo usado en el pago para vincular tu acceso.' }}</p>
 
         <div v-if="result.credentials" class="result-card__credentials">

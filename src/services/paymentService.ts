@@ -6,7 +6,7 @@ interface ApiResponse<T> {
   message: string
 }
 
-export type CheckoutExtra = 'recipe_book' | 'whatsapp_vip'
+export type CheckoutExtra = 'recipe_book'
 
 export interface PaymentBoxConfig {
   token: string

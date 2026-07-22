@@ -27,8 +27,7 @@ const openCheckout = () => {
         </div>
       </div>
       <div class="offer__bumps">
-        <article><span>+ $10</span><div><small>ORDER BUMP 01</small><strong>Recetario Secreto de Scarlett</strong><p>Comidas deliciosas, altas en proteína y bajas en calorías.</p></div></article>
-        <article><span>+ $15</span><div><small>ORDER BUMP 02</small><strong>Grupo VIP de WhatsApp</strong><p>Comunidad, progreso, dudas y motivación diaria.</p></div></article>
+        <article><span>+ $10</span><div><small>ORDER BUMP</small><strong>Recetario Secreto de Scarlett</strong><p>Comidas deliciosas, altas en proteína y bajas en calorías.</p></div></article>
       </div>
     </div>
     <CheckoutModal :open="checkoutOpen" @close="checkoutOpen = false" />

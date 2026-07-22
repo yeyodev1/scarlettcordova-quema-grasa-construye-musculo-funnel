@@ -7,13 +7,12 @@ const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 const stage = ref<'details' | 'payment'>('details')
 const addRecipeBook = ref(false)
-const addWhatsapp = ref(false)
 const errorMessage = ref('')
 const loading = ref(false)
 const paymentConfig = ref<PaymentBoxConfig | null>(null)
 const form = reactive({ name: '', lastName: '', email: '' })
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const displayedTotal = computed(() => 33 + (addRecipeBook.value ? 10 : 0) + (addWhatsapp.value ? 15 : 0))
+const displayedTotal = computed(() => 33 + (addRecipeBook.value ? 10 : 0))
 
 const close = () => { if (!loading.value) emit('close') }
 
@@ -30,7 +29,6 @@ async function continueToPayment() {
 
   const extras: CheckoutExtra[] = []
   if (addRecipeBook.value) extras.push('recipe_book')
-  if (addWhatsapp.value) extras.push('whatsapp_vip')
   loading.value = true
   try {
     const response = await paymentService.prepareEbookPayment({
@@ -55,7 +53,6 @@ watch(() => props.open, (open) => {
   stage.value = 'details'
   paymentConfig.value = null
   addRecipeBook.value = false
-  addWhatsapp.value = false
   errorMessage.value = ''
   loading.value = false
   Object.assign(form, { name: '', lastName: '', email: '' })
@@ -76,7 +73,6 @@ onUnmounted(() => { document.body.style.overflow = '' })
             <h2 id="checkout-title">Completa tu método.</h2>
             <p class="checkout-modal__intro">Ebook principal <strong>$33</strong>. Elige si quieres sumar apoyo extra.</p>
             <div class="checkout-modal__bumps">
-              <label :class="{ selected: addWhatsapp }"><input v-model="addWhatsapp" type="checkbox"><span><em>MÁS ACOMPAÑAMIENTO</em><strong>Grupo VIP de WhatsApp</strong><small>Comunidad privada, dudas y motivación diaria.</small></span><b>+$15</b></label>
               <label :class="{ selected: addRecipeBook }"><input v-model="addRecipeBook" type="checkbox"><span><em>MÁS VARIEDAD</em><strong>Recetario Secreto</strong><small>Alto en proteína, bajo en calorías, lleno de sabor.</small></span><b>+$10</b></label>
             </div>
             <div class="checkout-modal__form"><label><span>Nombre</span><input v-model="form.name" autocomplete="given-name" placeholder="Scarlett"></label><label><span>Apellido</span><input v-model="form.lastName" autocomplete="family-name" placeholder="Cordova"></label><label class="full"><span>Correo electrónico</span><input v-model="form.email" type="email" autocomplete="email" placeholder="tu@email.com"></label></div>
